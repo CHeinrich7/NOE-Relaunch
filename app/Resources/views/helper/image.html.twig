@@ -1,0 +1,18 @@
+{# src, width, height and title are required options in ImageHelperExtension #}
+<img
+    src="{{ img.src }}"
+
+    width="{{ img.width }}"
+    height="{{ img.height }}"
+
+    alt="{{ img.title }}"
+    title="{{ img.title }}"
+
+    {% if img.class is not null %}
+        class="{{ img.class }}"
+    {% endif %}
+
+    {% if img.style is not null %}
+        style="{{ img.style }}"
+    {% endif %}
+/>

@@ -1,0 +1,39 @@
+services:
+#    user.example:
+#        class: UserBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
+
+    security.access_denied.handler:
+        class: UserBundle\Services\Security\AccessDeniedHandler
+
+    usertype:
+        class: UserBundle\Form\UserType
+        arguments:
+            - "@entity.security.service"
+        tags:
+            - { name: form.type, alias: usertype }
+
+    logintype:
+        class: UserBundle\Form\LoginType
+        tags:
+            - { name: form.type }
+
+
+    user_repository:
+        class: UserBundle\Entity\Repository\UserRepository
+        factory_service: doctrine
+        factory_method: getRepository
+        arguments:
+            - UserBundle\Entity\User
+
+    role_repository:
+        class: Doctrine\ORM\EntityRepository
+        factory_service: doctrine
+        factory_method: getRepository
+        arguments:
+            - UserBundle\Entity\Role
+
+    user_prepersist_listener:
+        class: UserBundle\EventListener\UserPrePersistListener
+        tags:
+            - { name: doctrine.event_subscriber }

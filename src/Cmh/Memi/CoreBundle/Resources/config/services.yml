@@ -1,0 +1,4 @@
+services:
+#    cmh_memi_core.example:
+#        class: Cmh\Memi\CoreBundle\Example
+#        arguments: ["@service_id", "plain_value", %parameter%]

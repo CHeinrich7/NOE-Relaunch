@@ -1,0 +1,11 @@
+services:
+#    toolbox.example:
+#        class: ToolboxBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
+
+    entity.security.service:
+        class: ToolboxBundle\Services\EntitySecurityService
+        arguments:
+            - "@security.authorization_checker"
+            - "@security.token_storage"
+            - "@security.role_hierarchy"

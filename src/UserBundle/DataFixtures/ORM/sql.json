@@ -1,0 +1,4 @@
+{
+    "0": "INSERT INTO userrole (id, role) VALUES (1, \"ROLE_SUPER_ADMIN\")",
+    "1": "INSERT INTO user (id, username, salt, password, is_superuser, is_active, is_deletable, created_at, modified_at, deleted_at, role_id, created_by_id, modified_by_id, deleted_by_id) VALUES (1, \"admin\", \"037a2b606aa7492d118818bd284e85f1\", \"UsWTbJC1ELIsCN79SxxC5P7UOSASepSBmjnOtBoM1qqKqbYZKpMb+BICwad2r5gSbzO53fzbVuR4B93hdP/TgQ==\", 1, 1, 0, \"0000-00-00 00:00:00\", \"0000-00-00 00:00:00\", null, 1, 1, 1, null)"
+}

@@ -1,0 +1,38 @@
+security:
+    encoders:
+        UserBundle\Entity\User:
+            algorithm:        sha512
+            encode_as_base64: true
+
+    access_decision_manager:
+        strategy: unanimous
+
+    role_hierarchy:
+        ROLE_ADMIN:       [ROLE_APPLICANT]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+
+    providers:
+        administrators:
+            entity: { class: UserBundle:User }
+
+    firewalls:
+        admin_area:
+            pattern:    ^/
+            anonymous:  ~
+            form_login:
+                login_path:  user_login
+                check_path:  user_check
+                default_target_path:  education_calendar_overview
+                username_parameter:   logintype[_username]
+                password_parameter:   logintype[_password]
+            access_denied_handler:    security.access_denied.handler
+            logout:
+                path:   /in/logout
+                target: /login
+                invalidate_session: true
+                delete_cookies:
+                    a: { path: null, domain: null }
+                    b: { path: null, domain: null }
+
+#    access_control:
+#        - { path: ^/in, roles: [ ROLE_APPLICANT ] }

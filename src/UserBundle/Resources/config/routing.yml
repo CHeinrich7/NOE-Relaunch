@@ -1,0 +1,27 @@
+user_login:
+    path:     /login
+    defaults: { _controller: UserBundle:Register:login }
+
+user_check:
+    path:     /user_check
+
+redirect_to_user_login:
+    path:     /
+    defaults:
+        _controller:  FrameworkBundle:Redirect:redirect
+        route:        user_login
+        permanent:    true
+
+user_index:
+    path:     /in/user
+    defaults: { _controller: UserBundle:User:index }
+
+user_create:
+    path:     /in/user/create
+    defaults: { _controller: UserBundle:User:new }
+
+user_edit:
+    path:     /in/user/edit/{user}/{save}
+    defaults: { _controller: UserBundle:User:edit, save: 0 }
+    requirements:
+        user:  \d+

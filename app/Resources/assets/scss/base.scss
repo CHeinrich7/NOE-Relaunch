@@ -1,0 +1,22 @@
+img {
+  width:  100%;
+  height: auto;
+
+  &.backend-image {
+    &.portrait {
+      max-height: 200px;
+      width: auto;
+    }
+
+    &.landscape {
+      max-width: 200px;
+      height: auto;
+    }
+  }
+}
+
+.table.image-overview-table {
+  tr, td {
+    vertical-align: middle;
+  }
+}

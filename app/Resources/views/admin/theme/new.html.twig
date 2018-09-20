@@ -1,0 +1,25 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body_id 'admin_post_new' %}
+
+{% block main %}
+    <h1>{{ 'title.theme_new'|trans }}</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.title) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.background) }}
+
+        <input type="submit" value="{{ 'label.create_theme'|trans }}" class="btn btn-primary" />
+
+        {{ form_widget(form.saveAndCreateNew, { label: 'label.theme.save_and_create_new', attr: { class: 'btn btn-primary' } }) }}
+
+        <a href="{{ path('admin_theme_index') }}" class="btn btn-link">
+            {{ 'action.theme.back_to_list'|trans }}
+        </a>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block sidebar %}
+    {{ parent() }}
+{% endblock %}

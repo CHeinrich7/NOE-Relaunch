@@ -1,0 +1,56 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block body_id 'admin_theme_index' %}
+
+{% block main %}
+    <h1>{{ 'title.theme_list'|trans }}</h1>
+
+    <table class="table table-striped theme-overview-table">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">{{ 'label.title'|trans }}</th>
+                <th scope="col"><i class="fa fa-user" aria-hidden="true"></i> {{ 'label.author'|trans }}</th>
+                <th scope="col"><i class="fa fa-calendar" aria-hidden="true"></i> {{ 'label.published_at'|trans }}</th>
+                <th scope="col"><i class="fa fa-cogs" aria-hidden="true"></i> {{ 'label.actions'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for theme in themes %}
+            <tr>
+                <td>
+                    {% if theme.webFile %}
+                        {{ image_helper(theme, {class: 'backend-theme'})|raw }}
+                    {% endif %}
+                </td>
+                <td>{{ theme.title }}</td>
+                <td>{{ theme.authorEmail }}</td>
+                <td>{% if theme.publishedAt %}{{ theme.publishedAt|localizeddate('short', 'short', null, 'UTC') }}{% endif %}</td>
+                <td>
+                    <div class="item-actions">
+                        {% if theme.isAuthor(app.user) %}
+                            <a href="{{ path('admin_theme_edit', { id: theme.id }) }}" class="btn btn-sm btn-primary">
+                                <i class="fa fa-edit" aria-hidden="true"></i> {{ 'action.edit'|trans }}
+                            </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" align="center">{{ 'theme.no_themes_found'|trans }}</td>
+           </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block sidebar %}
+    <div class="section actions">
+        <a href="{{ path('admin_theme_new') }}" class="btn btn-lg btn-block btn-success">
+            <i class="fa fa-plus" aria-hidden="true"></i> {{ 'action.create_theme'|trans }}
+        </a>
+    </div>
+
+    {{ parent() }}
+{% endblock %}
