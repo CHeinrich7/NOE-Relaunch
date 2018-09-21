@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use UserBundle\Entity\User;
+use UserBundle\Form\UserType;
 
 /**
  * Class RegisterController
@@ -24,6 +25,17 @@ class RegisterController extends Controller
      */
     public function loginAction(Request $request)
     {
+        $admin = (new User())
+            ->setUsername('admin')
+            ->setNewPassword('admin8888')
+        ;
+
+        $form = $this->createForm(UserType::class, $admin);
+
+        $userRepo = $this->get('user_repository');
+        $userRepo->updateUserFromForm($form, $this->get('security.encoder_factory'));
+        die('save');
+
         /* @var $authenticationUtils AuthenticationUtils */
         $authenticationUtils = $this->get('security.authentication_utils');
 

@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
@@ -27,7 +28,7 @@ class UserRepository extends EntityRepository  implements UserProviderInterface
      *
      * @param string $username The username
      *
-     * @return UserInterface
+     * @return UserInterface|object
      *
      * @throws UsernameNotFoundException if the user is not found
      */
@@ -56,7 +57,7 @@ class UserRepository extends EntityRepository  implements UserProviderInterface
      *
      * @param UserInterface $user
      *
-     * @return UserInterface
+     * @return UserInterface|object
      *
      * @throws UnsupportedUserException if the account is not supported
      */
@@ -112,11 +113,12 @@ class UserRepository extends EntityRepository  implements UserProviderInterface
     }
 
     /**
-     * @param Form                    $form
-     *
+     * @param FormInterface           $form
      * @param EncoderFactoryInterface $encoderFactory
+     *
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateUserFromForm(Form $form, EncoderFactoryInterface $encoderFactory)
+    public function updateUserFromForm(FormInterface $form, EncoderFactoryInterface $encoderFactory)
     {
         /** @var User $user */
         $user = $form->getData();
@@ -128,9 +130,10 @@ class UserRepository extends EntityRepository  implements UserProviderInterface
 
         $user
             ->eraseCredentials()
-            ->setPassword($password);
+            ->setPassword($password)
+        ;
 
         $this->_em->persist($user);
         $this->_em->flush($user);
     }
-} 
+}

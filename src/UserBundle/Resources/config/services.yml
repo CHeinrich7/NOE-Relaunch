@@ -20,16 +20,14 @@ services:
 
 
     user_repository:
-        class: UserBundle\Entity\Repository\UserRepository
-        factory_service: doctrine
-        factory_method: getRepository
+        class: Doctrine\ORM\EntityRepository
+        factory: ['@doctrine.orm.entity_manager', getRepository]
         arguments:
             - UserBundle\Entity\User
 
     role_repository:
         class: Doctrine\ORM\EntityRepository
-        factory_service: doctrine
-        factory_method: getRepository
+        factory: ['@doctrine.orm.entity_manager', getRepository]
         arguments:
             - UserBundle\Entity\Role
 

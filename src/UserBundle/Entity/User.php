@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass="UserBundle\Entity\Repository\UserRepository")
- * @ORM\Table(name="user")
+ * @ORM\Table(name="userdata")
  *
  * @UniqueEntity(fields="username", message="There can not be one User twice in Database!")
  */

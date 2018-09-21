@@ -6,7 +6,8 @@
 # such as the security component and the dependency injection services
 imports:
     - { resource: parameters.yml }
-    - { resource: security.yml }
+    - { resource: '@UserBundle/Resources/config/security.yml' }
+#    - { resource: security.yml }
     - { resource: services.yml }
 
 # These are the configuration parameters that define the application's behavior
@@ -14,7 +15,8 @@ imports:
 # See http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     # This parameter defines the codes of the locales (languages) enabled in the application
-    app_locales: en|fr|de|es|cs|nl|ru|uk|ro|pt_BR|pl|it|ja|id|ca|sl
+    locale: de
+    app_locales: de
     app.notifications.email_sender: anonymous@image-blog.com
 
 # Basic configuration for the Symfony framework features
@@ -80,11 +82,19 @@ doctrine:
         driver: "pdo_mysql"
         dbname: "%database_name%"
         user:   "%database_user%"
-        password: "%database_passwort%"
+        password: "%database_password%"
         charset: UTF8
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
+
+
+stof_doctrine_extensions:
+    default_locale: de_DE
+    orm:
+        default:
+            sluggable: true
+            timestampable: true
 
 # Swiftmailer Configuration (used to send emails)
 swiftmailer:
