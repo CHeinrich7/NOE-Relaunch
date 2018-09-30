@@ -5,27 +5,20 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use ToolboxBundle\Interfaces\CreatedInterface;
+use ToolboxBundle\Interfaces\EntityInterface;
+use ToolboxBundle\Traits\CreatedTrait;
+use ToolboxBundle\Traits\EntityTrait;
 
 /**
  * @ORM\Entity(repositoryClass="AppBundle\Repository\PostRepository")
  * @ORM\Table(name="post")
  */
-class Post
+class Post implements EntityInterface, CreatedInterface
 {
     const NUM_ITEMS = 10;
 
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank()
-     */
-    private $title;
+    use EntityTrait, CreatedTrait;
 
     /**
      * @ORM\Column(type="string")
@@ -59,7 +52,7 @@ class Post
 
     /**
      * @ORM\OneToMany(
-     *      targetEntity="Comment",
+     *      targetEntity="CommentPost",
      *      mappedBy="post",
      *      orphanRemoval=true
      * )
@@ -81,21 +74,6 @@ class Post
     {
         $this->publishedAt = new \DateTime();
         $this->comments = new ArrayCollection();
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    public function setTitle($title)
-    {
-        $this->title = $title;
     }
 
     public function getSlug()
@@ -155,13 +133,13 @@ class Post
         return $this->comments;
     }
 
-    public function addComment(Comment $comment)
+    public function addComment(CommentPost $comment)
     {
         $this->comments->add($comment);
         $comment->setPost($this);
     }
 
-    public function removeComment(Comment $comment)
+    public function removeComment(CommentPost $comment)
     {
         $this->comments->removeElement($comment);
     }

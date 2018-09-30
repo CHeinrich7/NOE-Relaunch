@@ -7,33 +7,34 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use ToolboxBundle\Interfaces\CreatedInterface;
+use ToolboxBundle\Interfaces\EntityInterface;
+use ToolboxBundle\Traits\CreatedTrait;
+use ToolboxBundle\Traits\EntityTrait;
+
 #use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="image")
  */
-class Image
+class Image implements EntityInterface, CreatedInterface
 {
     const WEB_FILEPATH = DIRECTORY_SEPARATOR . 'uploaded' . DIRECTORY_SEPARATOR;
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+
+    use EntityTrait, CreatedTrait;
 
     /**
      * @ORM\ManyToOne(targetEntity="Post", inversedBy="images")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $post;
+    protected $post;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\NotBlank(message="image.description_blank")
      */
-    private $description;
+    protected $description;
 
     /**
      * @ORM\Column(type="string")
@@ -41,7 +42,7 @@ class Image
      *
      * @var File
      */
-    private $file;
+    protected $file;
 
     /**
      * @ORM\Column(type="string")
@@ -49,25 +50,25 @@ class Image
      *
      * @var File
      */
-    private $thumb;
+    protected $thumb;
 
     /**
      * @ORM\Column(type="string", unique=true)
      * @Assert\NotBlank(message="image.title_blank")
      */
-    private $title;
+    protected $caption;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\Email()
      */
-    private $authorEmail;
+    protected $authorEmail;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\DateTime()
      */
-    private $publishedAt;
+    protected $publishedAt;
 
     /**
      * @ORM\OneToMany(
@@ -77,17 +78,12 @@ class Image
      * )
      * @ORM\OrderBy({"publishedAt" = "DESC"})
      */
-    private $comments;
+    protected $comments;
 
     public function __construct()
     {
         $this->publishedAt = new \DateTime();
         $this->comments = new ArrayCollection();
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 
     public function getDescription()
@@ -204,7 +200,12 @@ class Image
 
         return $this->createThumb();
     }
-    private function createThumb()
+
+    /**
+     * @return null|File
+     * @throws \Exception
+     */
+    protected function createThumb()
     {
         if(!$this->isFile()) {
             return null;

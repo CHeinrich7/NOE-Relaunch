@@ -8,7 +8,7 @@ trait EntityTrait
 {
     /**
      * @var integer
-     * @ORM\Column(type="integer", nullable=false)
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -16,7 +16,7 @@ trait EntityTrait
 
     /**
      * @var string
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string")
      * @Assert\NotBlank()
      */
     protected $caption;

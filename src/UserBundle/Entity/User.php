@@ -36,7 +36,7 @@ class User implements UserInterface
 
     /**
      * @var string
-     * @ORM\Column(type="string", length=32, nullable = false)
+     * @ORM\Column(type="string", length=32)
      */
     protected $salt = null;
 
@@ -45,7 +45,8 @@ class User implements UserInterface
      * encode_as_base64: true
      *
      * @var string
-     * @ORM\Column(type="string", length=128, nullable = false)
+     * @ORM\Column(type="string", length=128)
+     * @Constraints\Length(max = "128", maxMessage="Maximallänge: 128 Zeichen")
      */
     protected $password;
 
@@ -76,6 +77,7 @@ class User implements UserInterface
 
     /**
      * @var string
+     * @Constraints\NotBlank(message="Dieses Feld darf nicht leer sein")
      */
     protected $oldPassword = null;
 

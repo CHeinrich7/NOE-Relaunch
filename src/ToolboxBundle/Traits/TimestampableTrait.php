@@ -13,7 +13,7 @@ trait TimestampableTrait
 
     /**
      * @Gedmo\Timestampable({"create", "update"})
-     * @ORM\Column(type="datetime", nullable=false)
+     * @ORM\Column(type="datetime")
      *
      * @var \DateTime
      */

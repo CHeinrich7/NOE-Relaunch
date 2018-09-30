@@ -4,22 +4,24 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ToolboxBundle\Interfaces\CreatedInterface;
+use ToolboxBundle\Interfaces\EntityInterface;
+use ToolboxBundle\Traits\CreatedTrait;
+use ToolboxBundle\Traits\EntityTrait;
 
-
-/**
- * @Entity
- * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="comment_type", type="string")
- * @ORM\DiscriminatorMap({"image" = 1, "post" = 2})
- */
 /**
  * @ORM\Entity
  * @ORM\Table(name="comment")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="comment_type", type="smallint")
+ * @ORM\DiscriminatorMap({1 = "CommentImage", 2 = "CommentPost"})
  */
-abstract class Comment
+abstract class Comment implements EntityInterface, CreatedInterface
 {
-    const COMMENT_IMAGE = 1;
-    const COMMENT_POST  = 2;
+    const COMMENT_TYPE_IMAGE = 1;
+    const COMMENT_TYPE_POST  = 2;
+
+    use EntityTrait, CreatedTrait;
 
     /**
      * @ORM\Id
@@ -53,11 +55,6 @@ abstract class Comment
     protected $publishedAt;
 
     /**
-     * @ORM\Column(type="smallint")
-     */
-    protected $commentType;
-
-    /**
      * @Assert\IsTrue(message = "comment.is_spam")
      */
     public function isLegitComment()
@@ -65,11 +62,6 @@ abstract class Comment
         $containsInvalidCharacters = false !== strpos($this->content, '@');
 
         return !$containsInvalidCharacters;
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 
     public function getContent()
@@ -90,39 +82,8 @@ abstract class Comment
         $this->authorEmail = $authorEmail;
     }
 
-    public function getPublishedAt()
+    public function getType()
     {
-        return $this->publishedAt;
-    }
-    public function setPublishedAt(\DateTime $publishedAt)
-    {
-        $this->publishedAt = $publishedAt;
-    }
-
-    public function getPost()
-    {
-        return $this->post;
-    }
-    public function setPost(Post $post)
-    {
-        $this->commentType = self::PostComment;
-        $this->post = $post;
-        $this->image = null;
-    }
-
-    public function getImage()
-    {
-        return $this->image;
-    }
-    public function setImage(Image $image)
-    {
-        $this->commentType = self::ImageComment;
-        $this->image = $image;
-        $this->post = null;
-    }
-
-    public function getCommentType()
-    {
-        return $this->commentType;
+        return static::COMMENT_TYPE;
     }
 }

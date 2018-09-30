@@ -8,7 +8,7 @@ trait CreatedTrait
 {
     /**
      * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(type="datetime", nullable=false)
+     * @ORM\Column(type="datetime")
      *
      * @var \DateTime
      */

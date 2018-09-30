@@ -10,8 +10,8 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use UserBundle\Entity\User;
 
 /**
@@ -37,7 +37,7 @@ class UserRepository extends EntityRepository  implements UserProviderInterface
 
         try {
             $user = $this->findOneBy(['username' => $username]);
-        } catch (NoResultException $e) {
+        } catch (\Throwable $e) {
             $message = sprintf(
                 'Unable to find an active admin AcmeUserBundle:User object identified by "%s".',
                 $username
@@ -116,6 +116,7 @@ class UserRepository extends EntityRepository  implements UserProviderInterface
      * @param FormInterface           $form
      * @param EncoderFactoryInterface $encoderFactory
      *
+     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function updateUserFromForm(FormInterface $form, EncoderFactoryInterface $encoderFactory)

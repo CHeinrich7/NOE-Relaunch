@@ -11,7 +11,7 @@ trait ModifiedTrait
      * @var UserInterface
      *
      * @ORM\ManyToOne(targetEntity="UserBundle\Interfaces\UserInterface")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(referencedColumnName="id")
      * @Gedmo\Blameable(on="create")
      */
     protected $createdBy;
@@ -20,7 +20,7 @@ trait ModifiedTrait
      * @var UserInterface
      *
      * @ORM\ManyToOne(targetEntity="UserBundle\Interfaces\UserInterface")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(referencedColumnName="id")
      * @Gedmo\Blameable(on={"create", "update"})
      */
     protected $modifiedBy;
