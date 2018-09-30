@@ -1,12 +1,5 @@
 <?php
-/**
- * User: cheinrich
- * Date: 09.12.2015
- * Time: 11:22
- */
-
 namespace UserBundle\EventListener;
-
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;

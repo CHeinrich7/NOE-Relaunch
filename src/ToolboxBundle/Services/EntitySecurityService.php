@@ -1,10 +1,4 @@
 <?php
-/**
- * User: cheinrich
- * Date: 03.12.2015
- * Time: 11:01
- */
-
 namespace ToolboxBundle\Services;
 
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -36,10 +30,13 @@ class EntitySecurityService
      */
     private $roleHierarchyArr;
 
-    public function __construct(AuthorizationCheckerInterface $checker, TokenStorageInterface $tokenStorage, RoleHierarchyInterface $roleHierarchy)
-    {
-        $this->checker = $checker;
-        $this->tokenStorage = $tokenStorage;
+    public function __construct(
+        AuthorizationCheckerInterface   $checker,
+        TokenStorageInterface           $tokenStorage,
+        RoleHierarchyInterface          $roleHierarchy
+    ) {
+        $this->checker          = $checker;
+        $this->tokenStorage     = $tokenStorage;
         $this->roleHierarchyObj = $roleHierarchy;
 
         $this->initRoleHierarchyArr();
@@ -97,6 +94,7 @@ class EntitySecurityService
             return null;
         }
 
+        /** @var User $user */
         if (!is_object($user = $token->getUser())) {
             return null;
         }

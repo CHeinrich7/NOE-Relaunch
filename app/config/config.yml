@@ -16,7 +16,7 @@ imports:
 parameters:
     # This parameter defines the codes of the locales (languages) enabled in the application
     locale: de
-    app_locales: de
+    app_locales: "%locale%"
     app.notifications.email_sender: anonymous@image-blog.com
 
 # Basic configuration for the Symfony framework features
@@ -32,16 +32,16 @@ framework:
     # and with different cache configurations for each fragment
     # http://symfony.com/doc/current/book/http_cache.html#edge-side-includes
     esi:             { enabled: true }
-    translator:      { fallback: "%locale%" }
+    translator:      { enabled: false, fallback: "%locale%" }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
         strict_requirements: ~
     form:            ~
     csrf_protection: ~
-    validation:      { enable_annotations: true }
+    validation:      { enabled: true, enable_annotations: true }
     templating:
-        engines: ['twig', 'php']
+        engines: ['twig']
     default_locale:  "%locale%"
     trusted_hosts:   ~
     trusted_proxies: ~
@@ -84,9 +84,26 @@ doctrine:
         user:   "%database_user%"
         password: "%database_password%"
         charset: UTF8
+
+        # see https://symfony.com/doc/3.4/doctrine.html#configuring-the-database
+        # and: [...] This means that any column of type string and unique=true must set its maximum length to 190.
+        #charset: utf8mb4
+        #default_table_options:
+        #    charset: utf8mb4
+        #    collate: utf8mb4_unicode_ci
+
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
+
+        resolve_target_entities:
+            #Acme\InvoiceBundle\Model\InvoiceSubjectInterface: AppBundle\Entity\Customer
+            UserBundle\Interfaces\UserInterface: UserBundle\Entity\User
+
+        #filters:
+        #    softdeleteable:
+        #        class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+        #        enabled: true
 
 
 stof_doctrine_extensions:
@@ -95,6 +112,7 @@ stof_doctrine_extensions:
         default:
             sluggable: true
             timestampable: true
+            #softdeleteable: true
 
 # Swiftmailer Configuration (used to send emails)
 swiftmailer:

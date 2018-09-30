@@ -3,27 +3,28 @@
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Gedmo\Mapping\Annotation as Gedmo;
-
+use ToolboxBundle\Traits\EntityTrait;
+use ToolboxBundle\Traits\SoftdeletableTrait;
+use UserBundle\Interfaces\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="UserBundle\Entity\Repository\UserRepository")
  * @ORM\Table(name="userdata")
  *
- * @UniqueEntity(fields="username", message="There can not be one User twice in Database!")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt")
+ * @Gedmo\SoftDeleteable(fieldName="deletedBy")
+ *
+ * @UniqueEntity(fields="caption", message="There can not be one User twice in Database!")
  */
-class User extends SoftdeletableEntity implements UserInterface
+class User implements UserInterface
 {
-    /**
-     * @var integer
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    use
+        EntityTrait,
+        SoftdeletableTrait
+    ;
 
     /**
      * @var string
@@ -31,7 +32,7 @@ class User extends SoftdeletableEntity implements UserInterface
      * @Constraints\NotBlank()
      * @Constraints\Length(min = "5", minMessage="Mindestlänge: 5 Zeichen")
      */
-    protected $username;
+    protected $caption;
 
     /**
      * @var string
@@ -93,17 +94,9 @@ class User extends SoftdeletableEntity implements UserInterface
     protected $role;
 
     /**
-     * @return integer
-     */
-    public function getId ()
-    {
-        return $this->id;
-    }
-
-    /**
      * @param boolean $isActive
      *
-     * @return User
+     * @return $this
      */
     public function setIsActive ( $isActive )
     {
@@ -115,7 +108,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @return boolean
      */
-    public function getIsActive ()
+    public function getIsActive (): bool
     {
         return $this->isActive;
     }
@@ -123,7 +116,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @param boolean $isDeletable
      *
-     * @return User
+     * @return $this
      */
     public function setIsDeletable ( $isDeletable )
     {
@@ -135,7 +128,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @return boolean
      */
-    public function getIsDeletable ()
+    public function getIsDeletable (): bool
     {
         return $this->isDeletable;
     }
@@ -143,7 +136,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @param boolean $isSuperUser
      *
-     * @return User
+     * @return $this
      */
     public function setIsSuperUser ( $isSuperUser )
     {
@@ -155,7 +148,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @return boolean
      */
-    public function getIsSuperUser ()
+    public function getIsSuperUser (): bool
     {
         return $this->isSuperUser;
     }
@@ -163,7 +156,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @return string
      */
-    public function getSalt ()
+    public function getSalt (): string
     {
         return $this->salt;
     }
@@ -183,7 +176,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @param string $password
      *
-     * @return User
+     * @return $this
      */
     public function setPassword ( $password )
     {
@@ -195,7 +188,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @return string
      */
-    public function getPassword ()
+    public function getPassword (): string
     {
         return $this->password;
     }
@@ -203,11 +196,11 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @param string $username
      *
-     * @return User
+     * @return $this
      */
     public function setUsername ( $username )
     {
-        $this->username = $username;
+        $this->setCaption( $username );
 
         return $this;
     }
@@ -215,9 +208,9 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @return string
      */
-    public function getUsername ()
+    public function getUsername (): string
     {
-        return $this->username;
+        return $this->getCaption();
     }
 
     /**
@@ -236,7 +229,7 @@ class User extends SoftdeletableEntity implements UserInterface
      *
      * @return Role[] The user roles
      */
-    public function getRoles ()
+    public function getRoles (): array
     {
         return array( $this->role->getRole() );
     }
@@ -244,7 +237,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @return Role
      */
-    public function getRole ()
+    public function getRole (): Role
     {
         return $this->role;
     }
@@ -252,7 +245,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @param Role $role
      *
-     * @return User
+     * @return $this
      */
     public function setRole ($role)
     {
@@ -307,7 +300,7 @@ class User extends SoftdeletableEntity implements UserInterface
     /**
      * @param string $newPassword
      *
-     * @return User
+     * @return $this
      */
     public function setNewPassword ( $newPassword )
     {

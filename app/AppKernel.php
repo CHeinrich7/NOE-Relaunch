@@ -25,6 +25,8 @@ class AppKernel extends Kernel
             new AppBundle\AppBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
 
+            new \Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+
             new UserBundle\UserBundle(),
             new \ToolboxBundle\ToolboxBundle(),
             new Cmh\Memi\CoreBundle\CmhMemiCoreBundle(),

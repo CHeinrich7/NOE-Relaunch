@@ -1,10 +1,4 @@
 <?php
-/**
- * User: cheinrich
- * Date: 17.11.2015
- * Time: 12:39
- */
-
 namespace UserBundle\Services;
 
 use Doctrine\Common\NotifyPropertyChanged;

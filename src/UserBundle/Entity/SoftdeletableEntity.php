@@ -1,16 +1,11 @@
 <?php
-/**
- * User: cheinrich
- * Date: 16.11.2015
- * Time: 13:21
- */
-
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints;
 use Gedmo\Mapping\Annotation as Gedmo;
+use ToolboxBundle\Traits\TimestampableTrait;
 
 /**
  * @package UserBundle\Entity
@@ -21,41 +16,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  */
 abstract class SoftdeletableEntity
 {
-    /**
-     * @var \DateTime
-     *
-     * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     * @Constraints\DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * @var UserInterface
-     *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
-     * @Gedmo\Blameable(on="create")
-     */
-    protected $createdBy;
-
-    /**
-     * @var \DateTime
-     *
-     * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(name="modified_at", type="datetime", nullable=true)
-     * @Constraints\DateTime
-     */
-    protected $modifiedAt;
-
-    /**
-     * @var UserInterface
-     *
-     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\User")
-     * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
-     * @Gedmo\Blameable(on="update")
-     */
-    protected $modifiedBy;
+    use TimestampableTrait;
 
     /**
      * @var \DateTime
@@ -72,38 +33,6 @@ abstract class SoftdeletableEntity
      * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
      */
     protected $deletedBy;
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @return UserInterface
-     */
-    public function getCreatedBy()
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getModifiedAt()
-    {
-        return $this->modifiedAt;
-    }
-
-    /**
-     * @return UserInterface
-     */
-    public function getModifiedBy()
-    {
-        return $this->modifiedBy;
-    }
 
     /**
      * @return \DateTime

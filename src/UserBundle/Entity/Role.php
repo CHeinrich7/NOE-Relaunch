@@ -3,7 +3,6 @@
 namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\Role\RoleInterface;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -14,7 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @UniqueEntity(fields="role", message="There can not be one Role twice in Database!")
  */
-class Role implements RoleInterface
+class Role
 {
     const ROLE_APPLICANT    = 'ROLE_APPLICANT';
     const ROLE_ADMIN        = 'ROLE_ADMIN';

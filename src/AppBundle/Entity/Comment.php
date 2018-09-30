@@ -5,67 +5,57 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
+/**
+ * @Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="comment_type", type="string")
+ * @ORM\DiscriminatorMap({"image" = 1, "post" = 2})
+ */
 /**
  * @ORM\Entity
  * @ORM\Table(name="comment")
  */
-class Comment
+abstract class Comment
 {
-    const ImageComment = Image::class;
-    const PostComment  = Post::class;
+    const COMMENT_IMAGE = 1;
+    const COMMENT_POST  = 2;
 
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Post", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $post;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Image", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $image;
+    protected $id;
 
     /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank(message="comment.blank")
      * @Assert\Length(
-     *     min = "5",
+     *     min = "10",
      *     minMessage = "comment.too_short",
      *     max = "10000",
      *     maxMessage = "comment.too_long"
      * )
      */
-    private $content;
+    protected $content;
 
     /**
      * @ORM\Column(type="string")
      * @Assert\Email()
      */
-    private $authorEmail;
+    protected $authorEmail;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\DateTime()
      */
-    private $publishedAt;
+    protected $publishedAt;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="smallint")
      */
-    private $commentType;
-
-    public function __construct()
-    {
-        $this->publishedAt = new \DateTime();
-    }
+    protected $commentType;
 
     /**
      * @Assert\IsTrue(message = "comment.is_spam")

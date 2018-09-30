@@ -27,3 +27,17 @@ services:
         arguments: ['@router', '%app_locales%', '%locale%']
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+
+    gedmo.listener.timestampable:
+        class: Gedmo\Timestampable\TimestampableListener
+        tags:
+        - { name: doctrine.event_subscriber, connection: default }
+        calls:
+        - [ setAnnotationReader, [ "@annotation_reader" ] ]
+
+    gedmo.listener.sortable:
+        class: Gedmo\Sortable\SortableListener
+        tags:
+        - { name: doctrine.event_subscriber, connection: default }
+        calls:
+        - [ setAnnotationReader, [ "@annotation_reader" ] ]

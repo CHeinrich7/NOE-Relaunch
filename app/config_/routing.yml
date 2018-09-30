@@ -1,7 +1,0 @@
-cmh_memi_core:
-    resource: "@CmhMemiCoreBundle/Resources/config/routing.yml"
-    prefix:   /
-
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
