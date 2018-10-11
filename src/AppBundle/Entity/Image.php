@@ -25,14 +25,9 @@ class Image implements EntityInterface, CreatedInterface
     use EntityTrait, CreatedTrait;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Post", inversedBy="images")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    protected $post;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(message="image.description_blank")
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @var string
      */
     protected $description;
 
@@ -53,101 +48,107 @@ class Image implements EntityInterface, CreatedInterface
     protected $thumb;
 
     /**
-     * @ORM\Column(type="string", unique=true)
-     * @Assert\NotBlank(message="image.title_blank")
-     */
-    protected $caption;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\Email()
-     */
-    protected $authorEmail;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Assert\DateTime()
-     */
-    protected $publishedAt;
-
-    /**
      * @ORM\OneToMany(
-     *      targetEntity="Comment",
+     *      targetEntity="CommentImage",
      *      mappedBy="image",
      *      orphanRemoval=true
      * )
      * @ORM\OrderBy({"publishedAt" = "DESC"})
+     *
+     * @var ArrayCollection|CommentImage[]
      */
     protected $comments;
 
+    /**
+     * @ORM\OneToMany(
+     *      targetEntity="ImageGalleryConnector",
+     *      mappedBy="image",
+     *      orphanRemoval=false
+     * )
+     * @ORM\OrderBy({"weight" = "ASC"})
+     *
+     * @var ArrayCollection|ImageGalleryConnector[]
+     */
+    protected $galleries;
+
+    /**
+     * @ORM\OneToMany(
+     *      targetEntity="Gallery",
+     *      mappedBy="previewImage",
+     *      orphanRemoval=false
+     * )
+     *
+     * @var ArrayCollection|Gallery[]
+     */
+    protected $galleryPreviews;
+
+
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
-        $this->comments = new ArrayCollection();
-    }
-
-    public function getDescription()
-    {
-        return $this->description;
-    }
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    public function getAuthorEmail()
-    {
-        return $this->authorEmail;
-    }
-    public function setAuthorEmail($authorEmail)
-    {
-        $this->authorEmail = $authorEmail;
+        $this->comments         = new ArrayCollection();
+        $this->galleries        = new ArrayCollection();
+        $this->galleryPreviews  = new ArrayCollection();
     }
 
     /**
-     * Is the given User the author of this Post?
-     *
-     * @param User $user
-     *
-     * @return bool
+     * @return string
      */
-    public function isAuthor(User $user)
+    public function getDescription(): string
     {
-        return $user->getEmail() === $this->getAuthorEmail();
+        return $this->description;
     }
 
-    public function getPublishedAt()
+    /**
+     * @param string $description
+     *
+     * @return $this
+     */
+    public function setDescription(string $description = null): self
     {
-        return $this->publishedAt;
-    }
-    public function setPublishedAt(\DateTime $publishedAt)
-    {
-        $this->publishedAt = $publishedAt;
+        $this->description = $description;
+
+        return $this;
     }
 
-    public function getPost()
-    {
-        return $this->post;
-    }
-    public function setPost(Post $post)
-    {
-        $this->post = $post;
-    }
-
-    public function getComments()
+    /**
+     * @return ArrayCollection|CommentImage[]
+     */
+    public function getComments(): ArrayCollection
     {
         return $this->comments;
     }
 
-    public function addComment(Comment $comment)
+    /**
+     * @param CommentImage $comment
+     *
+     * @return $this
+     */
+    public function addComment(CommentImage $comment): self
     {
         $this->comments->add($comment);
         $comment->setImage($this);
+
+        return $this;
     }
 
-    public function removeComment(Comment $comment)
+    /**
+     * @param CommentImage $comment
+     *
+     * @return bool
+     */
+    public function hasComment(CommentImage $comment): bool
     {
-        $this->comments->removeElement($comment);
+        return $this->comments->contains($comment);
+    }
+
+    /**
+     * @param CommentImage $comment
+     *
+     * @return bool
+     */
+    public function removeComment(CommentImage $comment)
+    {
+        return $this->comments->removeElement($comment);
     }
 
     public function getFile()
@@ -158,24 +159,50 @@ class Image implements EntityInterface, CreatedInterface
 
         return $this->file;
     }
-    public function setFile(File $file)
+
+    /**
+     * @param File $file
+     *
+     * @return $this
+     */
+    public function setFile(File $file): self
     {
         $this->file = $file;
         $this->getThumb();
+
+        return $this;
     }
+
+    /**
+     * @return bool
+     */
     public function isFile()
     {
         return is_file($this->getFile());
     }
-    public function setThumb(File $thumb)
+
+    /**
+     * @param File $thumb
+     *
+     * @return $this
+     */
+    public function setThumb(File $thumb): self
     {
         $this->thumb = $thumb;
-        return;
+        return $this;
     }
+
+    /**
+     * @return bool
+     */
     public function isThumb()
     {
         return $this->isFile() && !empty($this->thumb) && is_file($this->thumb);
     }
+
+    /**
+     * @return null|string
+     */
     public function getWebFile()
     {
         if(!$this->isFile()) {
@@ -184,6 +211,10 @@ class Image implements EntityInterface, CreatedInterface
 
         return self::WEB_FILEPATH . $this->getFile()->getFilename();
     }
+
+    /**
+     * @return null|File
+     */
     public function getThumb()
     {
         if(!$this->isFile()) {
@@ -202,8 +233,10 @@ class Image implements EntityInterface, CreatedInterface
     }
 
     /**
+     * @throws FileException
+     * @throws \LogicException
+     *
      * @return null|File
-     * @throws \Exception
      */
     protected function createThumb()
     {
@@ -214,17 +247,20 @@ class Image implements EntityInterface, CreatedInterface
         /** @var File $file */
         $file = $this->getFile();
 
-        switch ($file->getMimeType()) {
+        // throws FileException if mimeType is not allowed
+        static::mimeTypeToFileExtension($file->getMimeType());
+
+        switch ($file->getMimeType())
+        {
             case image_type_to_mime_type(IMAGETYPE_JPEG):
-                $img = imagecreatefromjpeg($file);
-                break;
             case image_type_to_mime_type(IMAGETYPE_PNG):
+            case image_type_to_mime_type(IMAGETYPE_GIF):
                 $img = imagecreatefrompng($file);
                 break;
             default:
-                // should throw FileException
-                static::mimeTypeToFileExtension($file->getMimeType());
-                throw new \Exception('Coding Error: static::mimeTypeToFileExtension() should throw FileException');
+                throw new \LogicException(sprintf(
+                    'please, developer. your forgot to map the MimeType "%s" in this switch ...'
+                ), $file->getMTime());
         }
 
         $fileRatio = $this->getFileRatio();
@@ -255,6 +291,9 @@ class Image implements EntityInterface, CreatedInterface
         return $this->thumb;
     }
 
+    /**
+     * @return array|null
+     */
     public function getFileRatio()
     {
         if(!$this->isFile()) {
@@ -265,32 +304,34 @@ class Image implements EntityInterface, CreatedInterface
 
         return array(
             'src'       => $this->getWebFile(),
-            'title'     => $this->getTitle(),
+            'caption'   => $this->getCaption(),
             'width'     => $imageSize[0],
             'height'    => $imageSize[1]
         );
     }
 
-    public function getTitle()
-    {
-        return $this->title;
-    }
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    public static function getAllwedFileExtensions():array
+    /**
+     * @return array
+     */
+    public static function getAllowedFileExtensions(): array
     {
         return array(
             image_type_to_mime_type(IMAGETYPE_PNG)  => image_type_to_extension(IMAGETYPE_PNG),
-            image_type_to_mime_type(IMAGETYPE_JPEG) => image_type_to_extension(IMAGETYPE_JPEG)
+            image_type_to_mime_type(IMAGETYPE_JPEG) => image_type_to_extension(IMAGETYPE_JPEG),
+            image_type_to_mime_type(IMAGETYPE_GIF)  => image_type_to_extension(IMAGETYPE_GIF)
         );
     }
 
+    /**
+     * @param string $mimetype
+     *
+     * @return string
+     *
+     * @throws FileException
+     */
     public static function mimeTypeToFileExtension(string $mimetype):string
     {
-        $fileTypes = static::getAllwedFileExtensions();
+        $fileTypes = static::getAllowedFileExtensions();
         if(!array_key_exists($mimetype, $fileTypes)) {
             throw new FileException(sprintf('Not allowed MimeType %s allowed are: [ %s ]', $mimetype, implode(', ', $fileTypes)));
         }
@@ -298,8 +339,95 @@ class Image implements EntityInterface, CreatedInterface
         return $fileTypes[ $mimetype ];
     }
 
+    /**
+     * @return ArrayCollection|Gallery[]
+     */
+    public function getGalleries()
+    {
+        $galleries = new ArrayCollection();
+
+        foreach($this->galleries as $galleryConnector)
+        {
+            $galleries->add($galleryConnector->getGallery());
+        }
+
+        return $galleries;
+    }
+
+    /**
+     * @param Gallery $gallery
+     *
+     * @return ImageGalleryConnector|bool
+     */
+    protected function getConnectorByGallery(Gallery $gallery)
+    {
+        foreach($this->galleries as $galleryConnector)
+        {
+            if($galleryConnector->getGallery() === $gallery) {
+                return $galleryConnector;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Gallery $gallery
+     *
+     * @return bool
+     */
+    public function hasGallery(Gallery $gallery)
+    {
+        return ( false !== $this->getConnectorByGallery($gallery) );
+    }
+
+    /**
+     * @param Gallery $gallery
+     *
+     * @return $this
+     */
+    public function addGallery(Gallery $gallery): self
+    {
+        if(!$this->hasGallery($gallery)) {
+            return $this;
+        }
+
+        $connector = new ImageGalleryConnector($this, $gallery);
+
+        $this->galleries->add($connector);
+
+        return $this;
+    }
+
+    /**
+     * @return Gallery[]|ArrayCollection
+     */
+    public function getGalleryPreviews(): ArrayCollection
+    {
+        return $this->galleryPreviews;
+    }
+
+    public function hasGalleryPreview(Gallery $gallery)
+    {
+        return $this->galleryPreviews->contains($gallery);
+    }
+
+    public function addGalleryPreview(Gallery $gallery): self
+    {
+        if($this->hasGalleryPreview($gallery)) {
+            return $this;
+        }
+
+        $this->galleryPreviews->add($gallery);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
-        return $this->title;
+        return $this->caption;
     }
 }

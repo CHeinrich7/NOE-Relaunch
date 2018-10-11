@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\Validator\Constraints as Assert;
 use ToolboxBundle\Interfaces\CreatedInterface;
 use ToolboxBundle\Interfaces\EntityInterface;
@@ -14,12 +15,12 @@ use ToolboxBundle\Traits\EntityTrait;
  * @ORM\Table(name="comment")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="comment_type", type="smallint")
- * @ORM\DiscriminatorMap({1 = "CommentImage", 2 = "CommentPost"})
+ * @ORM\DiscriminatorMap({1 = "CommentImage", 2 = "CommentChain"})
  */
 abstract class Comment implements EntityInterface, CreatedInterface
 {
-    const COMMENT_TYPE_IMAGE = 1;
-    const COMMENT_TYPE_POST  = 2;
+    const COMMENT_TYPE_IMAGE    = 1;
+    const COMMENT_TYPE_CHAIN    = 2;
 
     use EntityTrait, CreatedTrait;
 
@@ -84,6 +85,10 @@ abstract class Comment implements EntityInterface, CreatedInterface
 
     public function getType()
     {
+        if(!defined('static::COMMENT_TYPE')) {
+            throw new NoSuchPropertyException('The Property static::COMMENT_TYPE is not defined');
+        }
+
         return static::COMMENT_TYPE;
     }
 }
